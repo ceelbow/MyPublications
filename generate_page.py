@@ -11,6 +11,7 @@ INTRO = (
     "multi-omic datasets, integrating metagenomic, metatranscriptomic, and "
     "metaproteomic data."
 )
+LINKEDIN_URL = "https://www.linkedin.com/in/claire-elbon-7a08521a3"
 
 HEADER_PHOTOS = [
     ("assets/photos/deploying-gear.jpg", "Deploying gear on a research cruise"),
@@ -97,6 +98,7 @@ def main():
     html = html.replace("__BANNER_C__", banner_html(GALLERY_C))
     html = html.replace("__BANNER_D__", banner_html(GALLERY_D))
     html = html.replace("__GALLERY_MID_JS__", banner_js(GALLERY_MID))
+    html = html.replace("__LINKEDIN_URL__", LINKEDIN_URL)
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html)
 
@@ -155,7 +157,7 @@ TEMPLATE = """<!doctype html>
   .role { color: var(--muted); font-size: 1.05rem; margin: 0 0 0.75rem; }
   .intro { font-size: 1rem; max-width: 640px; }
   .cv-link {
-    display: inline-block; margin-top: 0.9rem; color: var(--accent);
+    display: inline-block; margin-top: 0.9rem; margin-right: 0.6rem; color: var(--accent);
     border: 1px solid var(--accent); border-radius: 6px; padding: 0.4rem 0.9rem;
     font-size: 0.9rem; text-decoration: none;
   }
@@ -205,6 +207,7 @@ TEMPLATE = """<!doctype html>
     <p class="role" id="role"></p>
     <p class="intro" id="intro"></p>
     <a class="cv-link" href="cv/CV_ClaireEliseElbon.docx" download>Download CV</a>
+    <a class="cv-link" href="__LINKEDIN_URL__" target="_blank" rel="noopener">LinkedIn</a>
     <div class="header-photos">__HEADER_PHOTOS__</div>
   </header>
 
