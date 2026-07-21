@@ -12,6 +12,18 @@ INTRO = (
     "metaproteomic data."
 )
 
+HEADER_PHOTOS = [
+    ("assets/photos/deploying-gear.jpg", "Deploying gear on a research cruise"),
+    ("assets/photos/on-deck.jpg", "On deck between stations"),
+]
+
+# (file, caption) — dispersed as full-width banners between sections
+GALLERY_A = ("assets/photos/sunset-buoy.jpg", "Sunset over the water")
+GALLERY_B = ("assets/photos/rainbow-watch.jpg", "Watching a rainbow from the deck")
+GALLERY_C = ("assets/photos/sunset-glow.jpg", "Evening sky at sea")
+GALLERY_MID = ("assets/photos/wave-closeup.jpg", "Wake off the stern")
+GALLERY_D = ("assets/photos/rail-sunset.jpg", "Sunset from the rail")
+
 
 def h_index(citation_counts):
     counts = sorted(citation_counts, reverse=True)
@@ -59,7 +71,32 @@ def main():
         "works": works,
     }
 
+    header_photos_html = "".join(
+        f'<img src="{path}" alt="{caption}" loading="lazy">'
+        for path, caption in HEADER_PHOTOS
+    )
+
+    def banner_html(item):
+        path, caption = item
+        return (
+            f'<div class="banner"><img src="{path}" alt="{caption}" loading="lazy">'
+            f'<div class="caption">{caption}</div></div>'
+        )
+
+    def banner_js(item):
+        path, caption = item
+        return json.dumps(
+            f'<img src="{path}" alt="{caption}" loading="lazy">'
+            f'<div class="caption">{caption}</div>'
+        )
+
     html = TEMPLATE.replace("__DATA__", json.dumps(data, ensure_ascii=False))
+    html = html.replace("__HEADER_PHOTOS__", header_photos_html)
+    html = html.replace("__BANNER_A__", banner_html(GALLERY_A))
+    html = html.replace("__BANNER_B__", banner_html(GALLERY_B))
+    html = html.replace("__BANNER_C__", banner_html(GALLERY_C))
+    html = html.replace("__BANNER_D__", banner_html(GALLERY_D))
+    html = html.replace("__GALLERY_MID_JS__", banner_js(GALLERY_MID))
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html)
 
@@ -123,6 +160,14 @@ TEMPLATE = """<!doctype html>
     font-size: 0.9rem; text-decoration: none;
   }
   .cv-link:hover { background: var(--accent); color: var(--surface); }
+  .header-photos { display: flex; gap: 0.75rem; margin-top: 1.1rem; flex-wrap: wrap; }
+  .header-photos img {
+    width: 140px; height: 140px; object-fit: cover; border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .banner { margin: 2.5rem 0; }
+  .banner img { width: 100%; max-height: 340px; object-fit: cover; display: block; border-radius: 8px; }
+  .banner .caption { font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem; text-align: right; }
   #theme-toggle {
     flex-shrink: 0;
     background: var(--surface); border: 1px solid var(--border); color: var(--text);
@@ -160,13 +205,18 @@ TEMPLATE = """<!doctype html>
     <p class="role" id="role"></p>
     <p class="intro" id="intro"></p>
     <a class="cv-link" href="cv/CV_ClaireEliseElbon.docx" download>Download CV</a>
+    <div class="header-photos">__HEADER_PHOTOS__</div>
   </header>
+
+  __BANNER_A__
 
   <div class="stats">
     <div class="stat"><span class="num" id="stat-papers"></span><span class="label">Papers</span></div>
     <div class="stat"><span class="num" id="stat-citations"></span><span class="label">Citations</span></div>
     <div class="stat"><span class="num" id="stat-hindex"></span><span class="label">h-index</span></div>
   </div>
+
+  __BANNER_B__
 
   <div class="charts">
     <div class="chart-card">
@@ -179,8 +229,12 @@ TEMPLATE = """<!doctype html>
     </div>
   </div>
 
+  __BANNER_C__
+
   <h2 class="section">Publications</h2>
   <div id="paper-list"></div>
+
+  __BANNER_D__
 
   <footer>Built with data from <a href="https://openalex.org" style="color:inherit">OpenAlex</a>. Citation counts by OpenAlex are not broken out by year before ~2012.</footer>
 </div>
@@ -196,7 +250,14 @@ document.getElementById('stat-citations').textContent = data.total_citations;
 document.getElementById('stat-hindex').textContent = data.h_index;
 
 const listEl = document.getElementById('paper-list');
-data.works.forEach(w => {
+const midIndex = Math.floor(data.works.length / 2);
+data.works.forEach((w, i) => {
+  if (i === midIndex && midIndex > 0) {
+    const banner = document.createElement('div');
+    banner.className = 'banner';
+    banner.innerHTML = __GALLERY_MID_JS__;
+    listEl.appendChild(banner);
+  }
   const div = document.createElement('div');
   div.className = 'paper';
   const badge = w.type && w.type !== 'article' ? `<span class="type-badge">${w.type}</span>` : '';
