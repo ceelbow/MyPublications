@@ -112,12 +112,19 @@ TEMPLATE = """<!doctype html>
     line-height: 1.5;
   }
   .wrap { max-width: 860px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
-  header { border-bottom: 2px solid var(--accent); padding-bottom: 1.5rem; margin-bottom: 2rem; position: relative; }
-  h1 { font-size: 2.1rem; margin: 0 0 0.25rem; color: var(--accent); }
+  header { border-bottom: 2px solid var(--accent); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+  .header-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+  h1 { font-size: 2.1rem; margin: 0 0 0.25rem; color: var(--accent); flex: 1 1 auto; min-width: 0; }
   .role { color: var(--muted); font-size: 1.05rem; margin: 0 0 0.75rem; }
   .intro { font-size: 1rem; max-width: 640px; }
+  .cv-link {
+    display: inline-block; margin-top: 0.9rem; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 6px; padding: 0.4rem 0.9rem;
+    font-size: 0.9rem; text-decoration: none;
+  }
+  .cv-link:hover { background: var(--accent); color: var(--surface); }
   #theme-toggle {
-    position: absolute; top: 0; right: 0;
+    flex-shrink: 0;
     background: var(--surface); border: 1px solid var(--border); color: var(--text);
     border-radius: 999px; padding: 0.4rem 0.9rem; font-family: inherit; cursor: pointer;
     font-size: 0.85rem;
@@ -146,10 +153,13 @@ TEMPLATE = """<!doctype html>
 <body>
 <div class="wrap">
   <header>
-    <button id="theme-toggle" type="button">Toggle theme</button>
-    <h1 id="name"></h1>
+    <div class="header-top">
+      <h1 id="name"></h1>
+      <button id="theme-toggle" type="button">Toggle theme</button>
+    </div>
     <p class="role" id="role"></p>
     <p class="intro" id="intro"></p>
+    <a class="cv-link" href="cv/CV_ClaireEliseElbon.docx" download>Download CV</a>
   </header>
 
   <div class="stats">
