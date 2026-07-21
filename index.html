@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dr. Claire Elise Elbon — Publications</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  :root {
+    --accent: #1a5f7a;
+    --accent-light: #2e86ab;
+    --bg: #fbfaf7;
+    --surface: #ffffff;
+    --text: #1c1c1c;
+    --muted: #5a5a5a;
+    --border: #e2e0da;
+  }
+  :root[data-theme="dark"] {
+    --accent: #5fb3d4;
+    --accent-light: #7cc7e8;
+    --bg: #14181b;
+    --surface: #1c2227;
+    --text: #eceae5;
+    --muted: #a3a3a3;
+    --border: #2e3438;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #5fb3d4;
+      --accent-light: #7cc7e8;
+      --bg: #14181b;
+      --surface: #1c2227;
+      --text: #eceae5;
+      --muted: #a3a3a3;
+      --border: #2e3438;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+  header { border-bottom: 2px solid var(--accent); padding-bottom: 1.5rem; margin-bottom: 2rem; position: relative; }
+  h1 { font-size: 2.1rem; margin: 0 0 0.25rem; color: var(--accent); }
+  .role { color: var(--muted); font-size: 1.05rem; margin: 0 0 0.75rem; }
+  .intro { font-size: 1rem; max-width: 640px; }
+  #theme-toggle {
+    position: absolute; top: 0; right: 0;
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    border-radius: 999px; padding: 0.4rem 0.9rem; font-family: inherit; cursor: pointer;
+    font-size: 0.85rem;
+  }
+  .stats { display: flex; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.1rem 1.4rem; flex: 1; min-width: 140px; }
+  .stat .num { font-size: 2rem; font-weight: bold; color: var(--accent); display: block; }
+  .stat .label { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+  @media (max-width: 640px) { .charts { grid-template-columns: 1fr; } }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+  .chart-card h3 { margin: 0 0 0.75rem; font-size: 0.95rem; color: var(--muted); font-weight: normal; text-transform: uppercase; letter-spacing: 0.04em; }
+  h2.section { font-size: 1.3rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; margin-top: 0; }
+  .paper { padding: 1rem 0; border-bottom: 1px solid var(--border); }
+  .paper:last-child { border-bottom: none; }
+  .paper a { color: var(--text); text-decoration: none; font-size: 1.05rem; font-weight: bold; }
+  .paper a:hover { color: var(--accent); text-decoration: underline; }
+  .paper .meta { color: var(--muted); font-size: 0.9rem; margin-top: 0.2rem; }
+  .paper .type-badge {
+    display: inline-block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.03em;
+    background: var(--accent-light); color: #fff; border-radius: 4px; padding: 0.1rem 0.45rem; margin-left: 0.5rem; vertical-align: middle;
+  }
+  footer { margin-top: 3rem; color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <button id="theme-toggle" type="button">Toggle theme</button>
+    <h1 id="name"></h1>
+    <p class="role" id="role"></p>
+    <p class="intro" id="intro"></p>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><span class="num" id="stat-papers"></span><span class="label">Papers</span></div>
+    <div class="stat"><span class="num" id="stat-citations"></span><span class="label">Citations</span></div>
+    <div class="stat"><span class="num" id="stat-hindex"></span><span class="label">h-index</span></div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-card">
+      <h3>Citations per year</h3>
+      <canvas id="chart-citations"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Papers per year</h3>
+      <canvas id="chart-papers"></canvas>
+    </div>
+  </div>
+
+  <h2 class="section">Publications</h2>
+  <div id="paper-list"></div>
+
+  <footer>Built with data from <a href="https://openalex.org" style="color:inherit">OpenAlex</a>. Citation counts by OpenAlex are not broken out by year before ~2012.</footer>
+</div>
+
+<script>
+const data = {"name": "Dr. Claire Elise Elbon", "title": "Post doc, Genome Sciences, University of Washington", "intro": "I study harmful algal blooms through metaproteomic time series and multi-omic datasets, integrating metagenomic, metatranscriptomic, and metaproteomic data.", "total_papers": 11, "total_citations": 55, "h_index": 4, "years": [2019, 2022, 2023, 2024, 2025, 2026], "papers_series": [1, 2, 2, 3, 1, 2], "citations_series": [0, 1, 6, 17, 18, 13], "works": [{"title": "BGC-Argo float reveals shifts in nitrogen-carbon cycling in an oxygen-deficient zone", "year": 2026, "venue": "Communications Earth & Environment", "type": "article", "doi": "https://doi.org/10.1038/s43247-026-03410-5", "cited_by_count": 1, "counts_by_year": {"2026": 1}, "co_authors": ["Mariana B. Bif", "Colette L. Kelly", "Mark A. Altabet", "Annie Bourbonnais", "Claire E. Elbon", "Edgart Flores", "Alanna Mnich", "Josh N. Plant", "Kenneth S. Johnson"]}, {"title": "Anaerobic methane oxidation by ANME-2a at two molar chloride in Orca Basin", "year": 2026, "venue": "bioRxiv (Cold Spring Harbor Laboratory)", "type": "preprint", "doi": "https://doi.org/10.64898/2026.02.09.704686", "cited_by_count": 1, "counts_by_year": {"2026": 1}, "co_authors": ["Lea Adepoju", "Jordan McKaig", "Rebecca S. R. Salcedo", "Aaron Martinez", "Steffen Buessecker", "Emilie J. Skoog", "Claire E. Elbon", "Emily R. Paris", "Miguel Desmarais", "Cathryn D. Sephus", "Chad Pozarycki", "Veronica Hegelein", "Enrica Quartini", "Amina T. Schartup", "Peter T. Doran", "Christopher E. Carr", "Ellery D. Ingall", "Douglas H. Bartlett", "Ranjani Murali", "M. R. Raven", "Anne Dekas", "Jeff S. Bowman", "Britney Schmidt", "J. Glass"]}, {"title": "BGC-Argo float reveals regime shifts in nitrogen-carbon cycling in an oxygen-deficient zone", "year": 2025, "venue": "Research Square", "type": "preprint", "doi": "https://doi.org/10.21203/rs.3.rs-7809237/v1", "cited_by_count": 0, "counts_by_year": {}, "co_authors": ["Mariana B. Bif", "Colette L. Kelly", "Mark A. Altabet", "Annie Bourbonnais", "Claire E. Elbon", "Edgart Flores", "Alanna Mnich", "Josh N. Plant", "Kenneth S. Johnson"]}, {"title": "Novel Alphaproteobacteria transcribe genes for nitric oxide transformation at high levels in a marine oxygen-deficient zone", "year": 2024, "venue": "Applied and Environmental Microbiology", "type": "article", "doi": "https://doi.org/10.1128/aem.02099-23", "cited_by_count": 10, "counts_by_year": {"2026": 1, "2025": 6, "2024": 3}, "co_authors": ["Claire E. Elbon", "Frank J. Stewart", "Jennifer B. Glass"]}, {"title": "Correction: Microbiomes and Planctomycete diversity in large-scale aquaria habitats", "year": 2024, "venue": "PLoS ONE", "type": "erratum", "doi": "https://doi.org/10.1371/journal.pone.0307131", "cited_by_count": 0, "counts_by_year": {}, "co_authors": ["Claire E. Elbon", "Gary R. LeCleir", "Matthew J. Tuttle", "Sophie Jurgensen", "Thomas G. Demas", "Christian J. Keller", "T. Stewart", "Alison Buchan"]}, {"title": "Rates of autotrophy peak in the anoxic interface of a deep hypersaline anoxic basin", "year": 2024, "venue": null, "type": "conference-paper", "doi": "https://doi.org/10.46427/gold2024.22345", "cited_by_count": 0, "counts_by_year": {}, "co_authors": ["Emily R. Paris", "Chad Pozarycki", "Andrew Mullen", "Enrica Quartini", "Jeff S. Bowman", "Miguel Desmarais", "Steffen Buessecker", "Matthew Meister", "Cathryn Sephus", "Anne Dekas", "Peter T. Doran", "Jennifer B. Glass", "Jordan McKaig", "Veronica Hegelein", "B. E. Schmidt", "Ellery D. Ingall", "Claire E. Elbon"]}, {"title": "Single-cell analysis in hypersaline brines predicts a water-activity limit of microbial anabolic activity", "year": 2023, "venue": "Science Advances", "type": "article", "doi": "https://doi.org/10.1126/sciadv.adj3594", "cited_by_count": 16, "counts_by_year": {"2026": 5, "2025": 4, "2024": 7}, "co_authors": ["Emily R. Paris", "Néstor Arandia‐Gorostidi", "Benjamin Klempay", "Jeff S. Bowman", "A. Pontefract", "Claire E. Elbon", "Jennifer B. Glass", "Ellery D. Ingall", "Peter T. Doran", "Sanjoy M. Som", "B. E. Schmidt", "Anne Dekas"]}, {"title": "Novel Alphaproteobacteria transcribe genes for nitric oxide transformation at high levels in a marine oxygen deficient zone", "year": 2023, "venue": "bioRxiv (Cold Spring Harbor Laboratory)", "type": "preprint", "doi": "https://doi.org/10.1101/2023.11.21.568154", "cited_by_count": 1, "counts_by_year": {"2025": 1}, "co_authors": ["Claire E. Elbon", "Frank J. Stewart", "Jennifer B. Glass"]}, {"title": "Something old, something new, something borrowed, something blue: the anaerobic microbial ancestry of aerobic respiration", "year": 2022, "venue": "Trends in Microbiology", "type": "article", "doi": "https://doi.org/10.1016/j.tim.2022.08.006", "cited_by_count": 20, "counts_by_year": {"2026": 5, "2025": 7, "2024": 4, "2023": 3, "2022": 1}, "co_authors": ["Jennifer B. Glass", "Claire E. Elbon", "Loren Dean Williams"]}, {"title": "Microbiomes and Planctomycete diversity in large-scale aquaria habitats", "year": 2022, "venue": "PLoS ONE", "type": "article", "doi": "https://doi.org/10.1371/journal.pone.0267881", "cited_by_count": 6, "counts_by_year": {"2024": 3, "2023": 3}, "co_authors": ["Claire E. Elbon", "Gary R. LeCleir", "Matthew J. Tuttle", "Sophie Jurgensen", "Thomas G. Demas", "Christian J. Keller", "T. Stewart", "Alison Buchan"]}, {"title": "Microbe Hunters: Searching for Anammox Bacteria in the Tennessee Aquarium", "year": 2019, "venue": null, "type": "article", "doi": null, "cited_by_count": 0, "counts_by_year": {}, "co_authors": ["Claire E. Elbon"]}]};
+
+document.getElementById('name').textContent = data.name;
+document.getElementById('role').textContent = data.title;
+document.getElementById('intro').textContent = data.intro;
+document.getElementById('stat-papers').textContent = data.total_papers;
+document.getElementById('stat-citations').textContent = data.total_citations;
+document.getElementById('stat-hindex').textContent = data.h_index;
+
+const listEl = document.getElementById('paper-list');
+data.works.forEach(w => {
+  const div = document.createElement('div');
+  div.className = 'paper';
+  const badge = w.type && w.type !== 'article' ? `<span class="type-badge">${w.type}</span>` : '';
+  div.innerHTML = `
+    <a href="${w.doi || '#'}" target="_blank" rel="noopener">${w.title}</a>${badge}
+    <div class="meta">${w.year || ''} · ${w.venue || ''}</div>
+  `;
+  listEl.appendChild(div);
+});
+
+function css(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function drawCharts() {
+  const accent = css('--accent');
+  const grid = css('--border');
+  const textColor = css('--muted');
+
+  Chart.defaults.color = textColor;
+  Chart.defaults.borderColor = grid;
+
+  new Chart(document.getElementById('chart-citations'), {
+    type: 'line',
+    data: {
+      labels: data.years,
+      datasets: [{
+        label: 'Citations',
+        data: data.citations_series,
+        borderColor: accent,
+        backgroundColor: accent,
+        tension: 0.25,
+        fill: false,
+      }],
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } },
+  });
+
+  new Chart(document.getElementById('chart-papers'), {
+    type: 'bar',
+    data: {
+      labels: data.years,
+      datasets: [{
+        label: 'Papers',
+        data: data.papers_series,
+        backgroundColor: accent,
+      }],
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } },
+  });
+}
+
+const root = document.documentElement;
+const toggle = document.getElementById('theme-toggle');
+const stored = localStorage.getItem('theme');
+if (stored) root.setAttribute('data-theme', stored);
+
+toggle.addEventListener('click', () => {
+  const current = root.getAttribute('data-theme') ||
+    (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const next = current === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+});
+
+drawCharts();
+</script>
+</body>
+</html>
